@@ -1,0 +1,386 @@
+-- MySQL dump 10.13  Distrib 8.0.21, for Linux (x86_64)
+--
+-- Host: localhost    Database: vk
+-- ------------------------------------------------------
+-- Server version	8.0.21
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `communities`
+--
+
+DROP TABLE IF EXISTS `communities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `communities` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сроки',
+  `name` varchar(150) NOT NULL COMMENT 'Название группы',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Группы';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `communities`
+--
+
+LOCK TABLES `communities` WRITE;
+/*!40000 ALTER TABLE `communities` DISABLE KEYS */;
+INSERT INTO `communities` VALUES (1,'Путешествия','1986-12-22 08:50:56','2020-08-30 06:33:49'),(2,'Программисты','2019-02-15 11:50:13','1987-02-03 20:19:48'),(3,'Активный отдых','2001-03-05 17:54:41','2013-05-09 19:11:03');
+/*!40000 ALTER TABLE `communities` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `communities_users`
+--
+
+DROP TABLE IF EXISTS `communities_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `communities_users` (
+  `community_id` int unsigned NOT NULL COMMENT 'Ссылка на группу',
+  `user_id` int unsigned NOT NULL COMMENT 'Ссылка на пользователя',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  PRIMARY KEY (`community_id`,`user_id`) COMMENT 'Составной первичный ключ',
+  KEY `FK_communities_users_users` (`user_id`),
+  CONSTRAINT `FK_communities_users_comunities` FOREIGN KEY (`community_id`) REFERENCES `communities` (`id`),
+  CONSTRAINT `FK_communities_users_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Участники групп, связь между пользователями и группами';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `communities_users`
+--
+
+LOCK TABLES `communities_users` WRITE;
+/*!40000 ALTER TABLE `communities_users` DISABLE KEYS */;
+INSERT INTO `communities_users` VALUES (1,4,'1992-07-08 00:44:32'),(1,7,'2005-12-17 19:05:56'),(1,10,'1996-12-12 20:03:45'),(1,13,'1986-03-23 10:53:55'),(1,19,'1982-07-26 04:31:32'),(1,25,'2008-03-09 23:40:44'),(1,39,'1996-11-11 09:37:34'),(1,46,'2013-08-27 05:48:42'),(1,92,'1996-10-01 09:40:39'),(2,2,'1976-12-06 22:57:35'),(2,5,'2020-08-08 06:49:29'),(2,8,'2008-01-29 02:26:34'),(2,14,'1971-03-10 02:21:17'),(2,17,'1998-03-24 03:13:47'),(2,43,'1982-04-10 14:46:55'),(2,62,'1981-11-04 04:07:56'),(2,93,'1987-02-08 20:24:03'),(3,3,'2000-08-11 19:58:48'),(3,6,'2005-05-24 23:17:17'),(3,9,'1979-06-03 12:21:38'),(3,18,'1975-03-15 22:46:11'),(3,24,'2017-02-05 22:50:03'),(3,61,'2017-06-30 19:52:32'),(3,70,'1986-07-09 20:50:38'),(3,75,'2004-12-09 16:46:27');
+/*!40000 ALTER TABLE `communities_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `entity`
+--
+
+DROP TABLE IF EXISTS `entity`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entity` (
+  `entity_id` int unsigned NOT NULL COMMENT 'Идентификатор сущности',
+  `entity_type_id` int unsigned NOT NULL COMMENT 'Идентификатор типа сущности entity_types id',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания записи',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  `created_by` int unsigned NOT NULL COMMENT 'Идентификатор автора',
+  PRIMARY KEY (`entity_id`,`entity_type_id`,`created_at`),
+  KEY `FK_entity_entity_types` (`entity_type_id`),
+  KEY `FK_entity_users` (`created_by`),
+  CONSTRAINT `entity_ibfk_1` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_types` (`id`),
+  CONSTRAINT `entity_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Сущности';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `entity`
+--
+
+LOCK TABLES `entity` WRITE;
+/*!40000 ALTER TABLE `entity` DISABLE KEYS */;
+INSERT INTO `entity` VALUES (3,1,'2021-04-08 19:08:25','2021-04-08 19:08:25',13),(4,2,'2021-04-08 19:08:26','2021-04-08 19:08:26',39),(5,3,'2021-04-08 19:08:26','2021-04-08 19:08:26',55),(8,2,'2021-04-08 19:08:26','2021-04-08 19:08:26',6),(10,2,'2021-04-08 19:08:26','2021-04-08 19:08:26',3),(11,1,'2021-04-08 19:08:26','2021-04-08 19:08:26',21),(13,1,'2021-04-08 19:08:26','2021-04-08 19:08:26',83),(15,3,'2021-04-08 19:08:26','2021-04-08 19:08:26',40);
+/*!40000 ALTER TABLE `entity` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `entity_types`
+--
+
+DROP TABLE IF EXISTS `entity_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entity_types` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор типа сущности',
+  `name` varchar(255) NOT NULL COMMENT 'Название типа',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Типы сущностей';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `entity_types`
+--
+
+LOCK TABLES `entity_types` WRITE;
+/*!40000 ALTER TABLE `entity_types` DISABLE KEYS */;
+INSERT INTO `entity_types` VALUES (1,'user','2021-04-08 19:08:25','2021-04-08 19:08:25'),(2,'message','2021-04-08 19:08:25','2021-04-08 19:08:25'),(3,'media','2021-04-08 19:08:25','2021-04-08 19:08:25');
+/*!40000 ALTER TABLE `entity_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `friendship`
+--
+
+DROP TABLE IF EXISTS `friendship`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `friendship` (
+  `user_id` int unsigned NOT NULL COMMENT 'Ссылка на инициатора дружеских отношений',
+  `friend_id` int unsigned NOT NULL COMMENT 'Ссылка на получателя приглашения дружить',
+  `friendship_status_id` int unsigned NOT NULL COMMENT 'Ссылка на статус (текущее состояние) отношений',
+  `requested_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время отправления приглашения дружить',
+  `confirmed_at` datetime DEFAULT NULL COMMENT 'Время подтверждения приглашения',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`user_id`,`friend_id`) COMMENT 'Составной первичный ключ',
+  KEY `FK_friendship_users_2` (`friend_id`),
+  KEY `FK_friendship_friendship_statuses` (`friendship_status_id`),
+  CONSTRAINT `FK_friendship_friendship_statuses` FOREIGN KEY (`friendship_status_id`) REFERENCES `friendship_statuses` (`id`),
+  CONSTRAINT `FK_friendship_users_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `FK_friendship_users_2` FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Таблица дружбы';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `friendship`
+--
+
+LOCK TABLES `friendship` WRITE;
+/*!40000 ALTER TABLE `friendship` DISABLE KEYS */;
+INSERT INTO `friendship` VALUES (6,6,2,'1998-05-12 10:37:48','1999-05-29 20:31:33','1988-04-22 19:16:40','1976-10-14 03:14:39'),(10,10,3,'2015-08-24 04:31:25','1993-02-14 00:04:47','2018-09-05 18:40:38','1971-11-23 10:53:02'),(11,11,3,'1986-11-28 11:06:14','2017-12-19 10:09:12','2008-07-16 16:24:38','1975-05-09 20:21:02'),(13,13,1,'1972-05-11 00:05:38','2017-11-01 16:38:28','1978-04-27 22:46:52','1985-09-29 23:16:46'),(14,14,1,'1994-12-10 06:16:46','2008-10-28 06:11:23','1997-06-29 11:17:30','2006-08-07 00:22:26'),(15,15,3,'2014-10-01 13:17:44','2009-01-18 21:55:58','2001-07-28 17:27:05','2020-07-15 20:52:57'),(21,21,1,'2016-07-16 13:56:19','2007-10-02 16:06:25','2007-09-07 16:32:32','1996-07-21 15:11:44'),(26,26,1,'1994-10-05 15:58:56','1991-04-02 02:11:30','2015-08-09 18:35:21','1996-05-23 02:26:19'),(27,27,1,'1997-11-05 09:04:58','1974-03-29 23:58:47','2005-09-16 06:32:43','1986-10-26 20:07:24'),(28,28,1,'1984-01-16 21:08:41','2019-01-06 18:25:15','1973-01-26 03:55:34','1982-05-19 03:46:29'),(30,30,1,'2001-10-18 10:20:30','1992-11-10 03:26:33','1974-01-14 05:27:44','2007-08-21 00:57:19');
+/*!40000 ALTER TABLE `friendship` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `friendship_statuses`
+--
+
+DROP TABLE IF EXISTS `friendship_statuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `friendship_statuses` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор строки',
+  `name` varchar(150) NOT NULL COMMENT 'Название статуса',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Статусы дружбы';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `friendship_statuses`
+--
+
+LOCK TABLES `friendship_statuses` WRITE;
+/*!40000 ALTER TABLE `friendship_statuses` DISABLE KEYS */;
+INSERT INTO `friendship_statuses` VALUES (1,'Запрос установление статуса','1993-05-05 03:00:34','2021-01-25 23:10:51'),(2,'Запрос подтвержден','1993-05-05 03:00:34','2021-01-25 23:10:51'),(3,'Запрос отклонен','1993-05-05 03:00:34','2021-01-25 23:10:51');
+/*!40000 ALTER TABLE `friendship_statuses` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `media`
+--
+
+DROP TABLE IF EXISTS `media`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `media` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор строки',
+  `user_id` int unsigned NOT NULL COMMENT 'Ссылка на пользователя, который загрузил файл',
+  `filename` varchar(255) NOT NULL COMMENT 'Путь к файлу',
+  `size` int NOT NULL COMMENT 'Размер файла',
+  `metadata` json DEFAULT NULL COMMENT 'Метаданные файла',
+  `media_type_id` int unsigned NOT NULL COMMENT 'Ссылка на тип контента',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`id`),
+  KEY `FK_media_users` (`user_id`),
+  KEY `FK_media_media_types` (`media_type_id`),
+  CONSTRAINT `FK_media_media_types` FOREIGN KEY (`media_type_id`) REFERENCES `media_types` (`id`),
+  CONSTRAINT `FK_media_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Медиафайлы';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `media`
+--
+
+LOCK TABLES `media` WRITE;
+/*!40000 ALTER TABLE `media` DISABLE KEYS */;
+INSERT INTO `media` VALUES (1,10,'dolore',681916,NULL,1,'2004-06-16 17:59:29','2011-03-25 02:09:47'),(2,2,'porro',4079,NULL,2,'1977-11-20 17:43:09','1989-01-05 19:53:35'),(3,3,'sit',969513,NULL,3,'2012-02-19 01:24:47','1983-12-14 02:08:49'),(4,31,'non',378796,NULL,1,'2014-06-15 11:51:58','1998-05-06 04:09:57'),(5,22,'iste',804094,NULL,2,'2021-04-02 09:22:04','1972-04-26 19:12:26'),(6,61,'alias',8,NULL,3,'1971-11-16 21:51:40','1979-02-09 12:01:29'),(7,7,'non',9,NULL,1,'1972-07-24 15:26:44','1993-06-30 21:19:55'),(8,71,'maxime',53,NULL,2,'1991-07-19 21:54:00','1980-10-25 10:04:18'),(9,9,'aut',949,NULL,3,'1995-09-28 15:14:02','1981-02-25 03:02:00'),(10,10,'molestiae',9371939,NULL,1,'1994-10-23 03:22:36','2012-11-08 15:43:48'),(11,11,'et',0,NULL,2,'2008-02-28 08:49:27','2002-06-28 23:27:42'),(12,29,'ea',35397,NULL,3,'2006-02-22 09:04:27','2017-04-18 17:49:00'),(13,42,'est',540583,NULL,1,'2020-11-09 23:20:59','2002-12-25 19:19:43'),(14,54,'excepturi',8,NULL,2,'1976-09-08 14:59:48','2009-03-13 17:40:54'),(15,15,'dignissimos',0,NULL,3,'1978-11-09 21:22:57','1981-07-15 23:53:55'),(16,16,'voluptas',89909,NULL,1,'2020-04-29 21:44:14','1991-02-22 11:09:07'),(17,17,'ullam',89216413,NULL,2,'2017-11-24 01:11:40','1974-10-20 11:29:18'),(18,18,'libero',888,NULL,3,'1988-03-02 12:30:41','1975-04-25 03:00:51'),(19,19,'aspernatur',705,NULL,1,'1988-08-04 13:46:08','1986-09-06 18:36:25'),(20,60,'et',978951933,NULL,2,'2013-01-21 06:21:44','1998-02-20 04:49:59'),(21,79,'nam',99405,NULL,3,'2013-02-09 15:20:13','1995-03-19 18:01:48'),(22,14,'dolorum',31,NULL,1,'2003-09-10 12:52:53','2005-02-01 18:32:51'),(23,23,'voluptas',522294609,NULL,2,'1988-03-19 08:55:54','2009-10-17 23:07:37'),(24,14,'ut',0,NULL,3,'2006-07-24 22:31:08','1980-07-13 19:22:35'),(25,5,'rerum',1509,NULL,1,'1987-02-15 19:05:12','1970-04-01 14:30:26'),(26,16,'soluta',110063,NULL,2,'1997-02-19 11:05:12','1993-09-07 13:42:03'),(27,21,'explicabo',74,NULL,3,'2002-07-31 16:50:03','1998-09-22 05:56:43'),(28,88,'soluta',0,NULL,1,'1987-08-21 14:28:07','1974-11-13 01:22:47'),(29,79,'aut',7750088,NULL,2,'1976-06-01 18:23:30','1977-06-28 20:13:39'),(30,30,'earum',3965414,NULL,3,'1991-08-19 02:29:56','1981-07-04 13:08:11'),(31,31,'occaecati',74442051,NULL,1,'1972-11-21 21:02:20','1992-02-17 19:05:16'),(32,32,'maiores',582679,NULL,2,'2009-04-28 15:57:15','1981-06-20 20:46:09'),(33,33,'dicta',21838637,NULL,3,'2002-12-15 04:30:34','2014-01-02 21:18:24'),(34,24,'nemo',605646,NULL,1,'1971-06-09 15:46:26','1999-11-22 04:16:56'),(35,35,'repellendus',26572432,NULL,2,'1988-03-04 15:50:34','2014-06-09 13:34:10'),(36,66,'provident',84655,NULL,3,'1983-07-22 22:19:00','2020-03-25 00:58:20'),(37,37,'molestias',2722701,NULL,1,'2009-08-07 19:49:42','1998-02-05 08:58:34'),(38,78,'officiis',8232,NULL,2,'2001-03-26 03:25:33','2003-02-20 18:32:12'),(39,39,'nisi',70,NULL,3,'1982-11-01 03:59:35','1991-03-09 07:48:48'),(40,90,'et',8393,NULL,1,'1979-05-03 14:40:16','1981-03-17 15:40:36'),(41,41,'voluptas',574897,NULL,2,'1981-02-22 05:32:05','1970-04-18 22:07:25'),(42,42,'vitae',772,NULL,3,'2007-03-06 11:07:56','2006-05-24 19:31:51'),(43,33,'qui',6,NULL,1,'1987-07-27 12:27:10','1992-10-07 02:33:37'),(44,44,'consequatur',9417794,NULL,2,'2002-04-28 00:22:34','2021-02-05 16:57:38'),(45,45,'quasi',2307546,NULL,3,'1975-04-17 16:04:12','1981-01-09 20:08:54'),(46,18,'consequatur',3131,NULL,1,'1976-05-04 13:10:05','1980-04-07 05:19:12'),(47,49,'impedit',4,NULL,2,'1998-11-22 03:21:34','1972-08-22 12:44:46'),(48,28,'odit',6,NULL,3,'2015-11-16 05:50:33','1987-08-31 10:45:59'),(49,19,'reprehenderit',49505,NULL,1,'1989-10-11 04:27:22','1989-11-22 01:00:39'),(50,67,'magni',7185114,NULL,2,'2015-06-17 05:15:37','2001-08-09 01:01:36');
+/*!40000 ALTER TABLE `media` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `media_types`
+--
+
+DROP TABLE IF EXISTS `media_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `media_types` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор строки',
+  `name` varchar(255) NOT NULL COMMENT 'Название типа',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Типы медиафайлов';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `media_types`
+--
+
+LOCK TABLES `media_types` WRITE;
+/*!40000 ALTER TABLE `media_types` DISABLE KEYS */;
+INSERT INTO `media_types` VALUES (1,'jpg','1976-09-27 07:40:33','2001-10-15 10:32:33'),(2,'mp3','1984-07-03 17:27:10','1973-11-16 22:22:40'),(3,'mp4','2019-08-13 13:11:25','2017-01-04 18:22:49');
+/*!40000 ALTER TABLE `media_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `message_statuses`
+--
+
+DROP TABLE IF EXISTS `message_statuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `message_statuses` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Статусы сообщений';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `message_statuses`
+--
+
+LOCK TABLES `message_statuses` WRITE;
+/*!40000 ALTER TABLE `message_statuses` DISABLE KEYS */;
+INSERT INTO `message_statuses` VALUES (1,'edited','1995-10-05 06:32:27','2004-07-14 18:38:04'),(2,'sent','1991-04-29 20:54:07','1987-01-11 16:06:25'),(3,'deleted','1977-02-13 19:51:35','2004-01-09 01:36:01');
+/*!40000 ALTER TABLE `message_statuses` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `messages`
+--
+
+DROP TABLE IF EXISTS `messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `messages` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор строки',
+  `from_user_id` int unsigned NOT NULL COMMENT 'Ссылка на отправителя сообщения',
+  `to_user_id` int unsigned NOT NULL COMMENT 'Ссылка на получателя сообщения',
+  `body` text NOT NULL COMMENT 'Текст сообщения',
+  `is_important` tinyint(1) DEFAULT NULL COMMENT 'Признак важности',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `status_id` int unsigned NOT NULL DEFAULT '1',
+  `entity_type_id` int unsigned NOT NULL DEFAULT '2',
+  PRIMARY KEY (`id`),
+  KEY `FK_messages_users_1` (`from_user_id`),
+  KEY `FK_messages_users_2` (`to_user_id`),
+  KEY `FK_message_statuses_id` (`status_id`),
+  CONSTRAINT `FK_message_statuses_id` FOREIGN KEY (`status_id`) REFERENCES `message_statuses` (`id`),
+  CONSTRAINT `FK_messages_users_1` FOREIGN KEY (`from_user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `FK_messages_users_2` FOREIGN KEY (`to_user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Сообщения';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `messages`
+--
+
+LOCK TABLES `messages` WRITE;
+/*!40000 ALTER TABLE `messages` DISABLE KEYS */;
+INSERT INTO `messages` VALUES (1,70,12,'King; \'and don\'t look at me like that!\' But she did not at all this time. \'I want a clean cup,\' interrupted the Hatter: \'as the things get used to it as you go to law: I will tell you what year it.',1,'1976-02-14 09:42:33',3,1),(2,25,26,'Cat. \'I said pig,\' replied Alice; \'and I wish I could let you out, you know.\' Alice had no idea what you\'re at!\" You know the way wherever she wanted much to know, but the three gardeners instantly.',1,'1985-08-15 09:06:00',2,2),(3,82,77,'Alice. The poor little thing was to eat the comfits: this caused some noise and confusion, as the game began. Alice thought the poor little Lizard, Bill, was in managing her flamingo: she succeeded.',1,'1970-11-03 19:55:11',1,3),(4,32,60,'The Lobster Quadrille is!\' \'No, indeed,\' said Alice. \'Nothing WHATEVER?\' persisted the King. \'Shan\'t,\' said the Queen. \'It proves nothing of the e--e--evening, Beautiful, beautiful Soup!\' CHAPTER.',1,'1998-04-10 13:59:57',3,1),(5,67,29,'I\'ve tried banks, and I\'ve tried to say \'I once tasted--\' but checked herself hastily. \'I don\'t much care where--\' said Alice. \'I mean what I should think very likely to eat the comfits: this caused.',0,'2020-12-09 03:50:19',1,2),(6,89,11,'I hadn\'t mentioned Dinah!\' she said to the game. CHAPTER IX. The Mock Turtle replied; \'and then the Rabbit\'s little white kid gloves, and was delighted to find that she wasn\'t a bit afraid of it..',1,'2012-09-03 15:50:39',1,3),(7,44,29,'She is such a long way back, and see how he can thoroughly enjoy The pepper when he sneezes; For he can EVEN finish, if he wasn\'t one?\' Alice asked. \'We called him a fish)--and rapped loudly at the.',0,'2013-10-28 05:01:51',1,1),(8,76,82,'This time there were any tears. No, there were three little sisters,\' the Dormouse again, so violently, that she did not sneeze, were the verses the White Rabbit: it was perfectly round, she found.',1,'2011-05-14 12:00:11',1,2),(9,61,84,'Now you know.\' \'Who is this?\' She said the Cat. \'Do you mean by that?\' said the Dormouse, who was trembling down to nine inches high. CHAPTER VI. Pig and Pepper For a minute or two, they began.',1,'1986-04-17 16:41:01',1,3),(10,44,28,'But at any rate,\' said Alice: \'allow me to introduce some other subject of conversation. While she was surprised to see that she did not come the same words as before, \'It\'s all her wonderful.',1,'2014-10-14 09:45:56',1,1),(11,34,80,'PLEASE mind what you\'re at!\" You know the song, she kept fanning herself all the jurors had a door leading right into a small passage, not much surprised at her side. She was looking down at them,.',0,'1973-05-16 02:40:20',3,2),(12,80,79,'Alice went on talking: \'Dear, dear! How queer everything is queer to-day.\' Just then she noticed that they had at the time she had succeeded in curving it down into a conversation. \'You don\'t know.',0,'1977-02-15 21:12:06',3,3),(13,32,45,'YOUR opinion,\' said Alice. \'I\'m glad they don\'t give birthday presents like that!\' said Alice doubtfully: \'it means--to--make--anything--prettier.\' \'Well, then,\' the Cat said, waving its right ear.',1,'1992-11-25 02:10:12',2,1),(14,87,45,'THAT. Then again--\"BEFORE SHE HAD THIS FIT--\" you never even spoke to Time!\' \'Perhaps not,\' Alice cautiously replied, not feeling at all what had become of it; and as Alice could only see her. She.',0,'1987-03-14 16:41:12',3,2),(15,90,17,'An obstacle that came between Him, and ourselves, and it. Don\'t let me help to undo it!\' \'I shall do nothing of the trees had a little bit of stick, and held it out loud. \'Thinking again?\' the.',1,'2016-01-25 03:19:46',1,3),(16,67,20,'Dormouse; \'--well in.\' This answer so confused poor Alice, that she had forgotten the words.\' So they sat down and make out at the mushroom (she had grown in the middle of one! There ought to be.',0,'2005-12-04 05:30:23',1,1),(17,34,34,'Alice, \'and if it began ordering people about like mad things all this time, and was going on within--a constant howling and sneezing, and every now and then, \'we went to work at once and put back.',0,'2020-10-24 19:52:56',3,2),(18,58,93,'Dormouse go on in the distance, and she jumped up in her head, she tried to fancy to cats if you only kept on puzzling about it while the rest of the right-hand bit to try the whole pack rose up.',1,'1995-08-11 22:01:47',3,3),(19,8,12,'As there seemed to be said. At last the Gryphon at the flowers and the Hatter grumbled: \'you shouldn\'t have put it into his cup of tea, and looked at the time she went on all the first witness,\'.',0,'1992-05-17 02:21:40',2,1),(20,54,1,'Alice went on, \'I must be Mabel after all, and I shall be a grin, and she jumped up on tiptoe, and peeped over the wig, (look at the proposal. \'Then the eleventh day must have been changed for.',1,'2010-09-17 15:18:40',1,2),(21,34,14,'Majesty,\' said Alice to herself. At this moment Alice felt dreadfully puzzled. The Hatter\'s remark seemed to Alice an excellent plan, no doubt, and very nearly carried it off. * * * * * * * * * *.',0,'1987-06-14 14:42:35',3,3),(22,7,34,'It doesn\'t look like it?\' he said. \'Fifteenth,\' said the Gryphon. \'We can do no more, whatever happens. What WILL become of it; and while she was coming to, but it was growing, and very soon had to.',1,'1988-04-23 10:58:47',1,1),(23,86,20,'Hatter went on \'And how did you begin?\' The Hatter was the Cat went on, turning to Alice severely. \'What are they made of?\' Alice asked in a low voice, to the tarts on the whole place around her.',0,'2016-12-25 23:03:38',3,2),(24,87,99,'So she began nursing her child again, singing a sort of life! I do wonder what I see\"!\' \'You might just as I used--and I don\'t think,\' Alice went on, \'if you only walk long enough.\' Alice felt.',1,'1995-09-19 09:02:17',1,3),(25,25,90,'RABBIT\' engraved upon it. She went in search of her ever getting out of court! Suppress him! Pinch him! Off with his head!\' or \'Off with his head!\' or \'Off with her head!\' about once in the sea,.',0,'1983-01-30 15:22:18',3,1),(26,81,41,'Knave was standing before them, in chains, with a sigh: \'it\'s always tea-time, and we\'ve no time to go, for the White Rabbit was still in existence; \'and now for the hedgehogs; and in another.',0,'1995-09-12 12:46:25',2,2),(27,40,15,'MYSELF, I\'m afraid, sir\' said Alice, a good thing!\' she said to herself in a low voice. \'Not at all,\' said Alice: \'three inches is such a neck as that! No, no! You\'re a serpent; and there\'s no use.',1,'1994-05-20 22:35:02',3,3),(28,2,75,'YOUR temper!\' \'Hold your tongue, Ma!\' said the Hatter, \'I cut some more tea,\' the Hatter hurriedly left the court, arm-in-arm with the lobsters and the other queer noises, would change to dull.',1,'1981-04-28 19:33:32',1,1),(29,6,24,'He only does it matter to me whether you\'re nervous or not.\' \'I\'m a poor man, your Majesty,\' the Hatter continued, \'in this way:-- \"Up above the world you fly, Like a tea-tray in the trial done,\'.',1,'1995-10-25 16:55:23',3,2),(30,19,49,'While she was losing her temper. \'Are you content now?\' said the Cat, \'a dog\'s not mad. You grant that?\' \'I suppose they are the jurors.\' She said the Caterpillar took the place where it had.',0,'2015-09-24 02:33:00',3,3),(31,86,29,'Alice. \'Then you should say what you mean,\' the March Hare and his friends shared their never-ending meal, and the roof of the Gryphon, half to Alice. \'What IS a Caucus-race?\' said Alice; not that.',1,'2019-03-06 11:25:26',3,1),(32,84,13,'She took down a good deal until she had not long to doubt, for the Duchess said in a furious passion, and went on growing, and, as she could. The next thing was snorting like a snout than a pig, and.',0,'1996-12-09 02:16:54',2,2),(33,88,47,'Dormouse fell asleep instantly, and neither of the Queen\'s absence, and were resting in the sea!\' cried the Gryphon, \'that they WOULD go with Edgar Atheling to meet William and offer him the crown..',1,'1995-11-30 00:52:17',3,3),(34,27,51,'Cat again, sitting on a summer day: The Knave of Hearts, who only bowed and smiled in reply. \'Please come back with the bread-and-butter getting so thin--and the twinkling of the others took the.',1,'2006-11-13 14:00:16',3,1),(35,84,94,'Alice, as she remembered trying to make ONE respectable person!\' Soon her eye fell on a three-legged stool in the sea, some children digging in the direction in which case it would like the look of.',0,'1973-04-27 22:26:00',2,2),(36,37,15,'She soon got it out into the jury-box, or they would die. \'The trial cannot proceed,\' said the Caterpillar. \'Well, perhaps you haven\'t found it advisable--\"\' \'Found WHAT?\' said the King said, with a.',1,'2017-12-16 05:25:28',1,3),(37,59,57,'Suppress him! Pinch him! Off with his nose, and broke off a little hot tea upon its nose. The Dormouse had closed its eyes by this time, sat down and began to cry again, for this curious child was.',0,'2003-01-12 13:50:37',1,1),(38,64,18,'Alice, who had not got into a graceful zigzag, and was going to leave the room, when her eye fell on a crimson velvet cushion; and, last of all her fancy, that: he hasn\'t got no business there, at.',1,'2011-03-29 19:34:41',2,2),(39,53,43,'His voice has a timid voice at her for a minute or two, she made out what it meant till now.\' \'If that\'s all you know why it\'s called a whiting?\' \'I never could abide figures!\' And with that she.',0,'1982-01-14 21:06:55',3,3),(40,44,14,'SLUGGARD,\"\' said the youth, \'as I mentioned before, And have grown most uncommonly fat; Yet you finished the guinea-pigs!\' thought Alice. \'I\'m a--I\'m a--\' \'Well! WHAT are you?\' said the Caterpillar..',0,'2001-09-30 14:55:35',2,1),(41,74,43,'Queen,\' and she tried another question. \'What sort of way, \'Do cats eat bats?\' and sometimes, \'Do bats eat cats?\' for, you see, because some of the hall; but, alas! the little golden key in the.',0,'2007-02-05 01:36:37',1,2),(42,91,70,'Dormouse indignantly. However, he consented to go from here?\' \'That depends a good deal frightened by this time, and was going to do so. \'Shall we try another figure of the court with a sigh: \'he.',1,'2018-08-27 19:17:18',3,3),(43,83,1,'Alice more boldly: \'you know you\'re growing too.\' \'Yes, but some crumbs must have a prize herself, you know,\' Alice gently remarked; \'they\'d have been changed for Mabel! I\'ll try if I chose,\' the.',1,'1986-11-24 16:00:32',2,1),(44,97,97,'Cat, \'a dog\'s not mad. You grant that?\' \'I suppose they are the jurors.\' She said the Hatter, and, just as the March Hare interrupted in a game of play with a deep sigh, \'I was a queer-shaped little.',1,'1999-03-18 23:45:34',1,2),(45,57,42,'Let me see: that would happen: \'\"Miss Alice! Come here directly, and get ready for your interesting story,\' but she knew she had to stop and untwist it. After a while she ran, as well as the other.\'.',0,'1971-04-04 20:36:43',1,3),(46,85,97,'Alice. \'Why, there they are!\' said the March Hare, who had been wandering, when a cry of \'The trial\'s beginning!\' was heard in the grass, merely remarking as it didn\'t much matter which way it was a.',1,'1995-07-08 21:02:50',1,1),(47,29,87,'Lory positively refused to tell its age, there was no more of the trees under which she concluded that it made Alice quite jumped; but she could remember them, all these changes are! I\'m never sure.',0,'2006-10-27 19:40:42',3,2),(48,43,80,'Hatter and the little door: but, alas! either the locks were too large, or the key was too small, but at the end of the Gryphon, \'you first form into a chrysalis--you will some day, you know--and.',0,'1991-02-01 02:31:04',1,3),(49,63,89,'And beat him when he pleases!\' CHORUS. \'Wow! wow! wow!\' While the Panther were sharing a pie--\' [later editions continued as follows When the Mouse in the common way. So she set to work, and very.',0,'1984-06-16 15:35:49',1,1),(50,57,19,'First, however, she again heard a little bottle that stood near. The three soldiers wandered about for a minute, trying to box her own mind (as well as she remembered how small she was now about a.',1,'1994-06-07 03:31:33',1,2),(51,50,17,'Majesty,\' said the Lory hastily. \'I thought it must be growing small again.\' She got up in such a dear little puppy it was!\' said Alice, feeling very glad she had but to her feet as the rest were.',1,'1997-12-29 18:52:58',1,3),(52,5,62,'I begin, please your Majesty,\' said Alice loudly. \'The idea of having nothing to what I could say if I was, I shouldn\'t like THAT!\' \'Oh, you can\'t be civil, you\'d better finish the story for.',0,'1975-09-02 04:19:37',1,1),(53,88,18,'For anything tougher than suet; Yet you balanced an eel on the breeze that followed them, the melancholy words:-- \'Soo--oop of the Gryphon, and the beak-- Pray how did you call it sad?\' And she went.',0,'1972-12-08 22:56:06',2,2),(54,72,28,'Alice dodged behind a great interest in questions of eating and drinking. \'They lived on treacle,\' said the Cat: \'we\'re all mad here. I\'m mad. You\'re mad.\' \'How do you want to see what was on the.',0,'1982-03-10 18:48:36',1,3),(55,82,54,'Next came the royal children, and make one quite giddy.\' \'All right,\' said the Hatter, it woke up again with a lobster as a drawing of a book,\' thought Alice to herself, in a dreamy sort of way, \'Do.',0,'1971-01-28 12:37:37',2,1),(56,10,82,'COULD grin.\' \'They all can,\' said the Hatter: \'it\'s very rude.\' The Hatter was out of sight, he said in a voice sometimes choked with sobs, to sing this:-- \'Beautiful Soup, so rich and green,.',1,'2008-04-09 00:44:42',3,2),(57,92,23,'I only wish people knew that: then they both bowed low, and their curls got entangled together. Alice laughed so much contradicted in her hand, and Alice joined the procession, wondering very much.',1,'2011-03-30 09:49:32',3,3),(58,73,9,'Queen, tossing her head impatiently; and, turning to Alice an excellent plan, no doubt, and very neatly and simply arranged; the only difficulty was, that you couldn\'t cut off a bit of stick, and.',1,'1971-06-30 00:04:46',3,1),(59,19,68,'I to get us dry would be quite absurd for her neck kept getting entangled among the trees, a little bottle that stood near. The three soldiers wandered about in the prisoner\'s handwriting?\' asked.',1,'1981-05-17 23:48:32',2,2),(60,64,81,'But do cats eat bats?\' and sometimes, \'Do bats eat cats?\' for, you see, as they came nearer, Alice could see her after the candle is like after the rest of the goldfish kept running in her haste,.',0,'2009-02-18 08:41:34',1,3),(61,80,58,'Then followed the Knave was standing before them, in chains, with a lobster as a cushion, resting their elbows on it, and then added them up, and began bowing to the end: then stop.\' These were the.',1,'1999-12-08 17:10:25',3,1),(62,11,61,'The Frog-Footman repeated, in the distance. \'And yet what a long argument with the bones and the jury eagerly wrote down all three to settle the question, and they walked off together. Alice was.',1,'1982-07-21 06:05:15',1,2),(63,24,8,'At this the White Rabbit with pink eyes ran close by it, and kept doubling itself up and down looking for it, she found herself lying on the stairs. Alice knew it was sneezing on the whole place.',0,'1989-11-12 08:08:10',2,3),(64,67,44,'Queen shrieked out. \'Behead that Dormouse! Turn that Dormouse out of the tea--\' \'The twinkling of the tail, and ending with the other birds tittered audibly. \'What I was a table set out under a tree.',1,'1977-11-21 09:07:05',2,1),(65,72,31,'She\'ll get me executed, as sure as ferrets are ferrets! Where CAN I have done that, you know,\' said Alice, rather doubtfully, as she ran. \'How surprised he\'ll be when he pleases!\' CHORUS. \'Wow! wow!.',1,'2013-08-27 17:08:47',2,2),(66,32,4,'I suppose Dinah\'ll be sending me on messages next!\' And she tried to look down and cried. \'Come, there\'s no use in knocking,\' said the Mock Turtle interrupted, \'if you don\'t know much,\' said Alice,.',0,'2005-05-13 05:53:55',2,3),(67,41,2,'I only wish they COULD! I\'m sure _I_ shan\'t be beheaded!\' \'What for?\' said the Hatter; \'so I can\'t put it to the little door, so she sat down at once, with a little ledge of rock, and, as the whole.',0,'1990-12-05 15:38:29',1,1),(68,83,15,'Do come back again, and looking anxiously about her. \'Oh, do let me help to undo it!\' \'I shall do nothing of the room again, no wonder she felt that she still held the pieces of mushroom in her.',0,'1977-10-06 08:06:06',1,2),(69,22,28,'VERY deeply with a little nervous about this; \'for it might injure the brain; But, now that I\'m perfectly sure I don\'t want to go down the chimney!\' \'Oh! So Bill\'s got the other--Bill! fetch it.',0,'2008-09-16 20:50:26',1,3),(70,23,69,'It doesn\'t look like one, but it is.\' \'Then you shouldn\'t talk,\' said the Mock Turtle, suddenly dropping his voice; and the second thing is to find her way through the door, and knocked. \'There\'s no.',1,'1994-03-21 12:36:31',3,1),(71,52,94,'Hearts, and I don\'t understand. Where did they live at the door-- Pray, what is the reason so many lessons to learn! No, I\'ve made up my mind about it; and the moment they saw her, they hurried back.',0,'1993-03-05 19:55:25',3,2),(72,60,69,'Bill,\' she gave her one, they gave him two, You gave us three or more; They all returned from him to be otherwise than what it was the King; and as it was labelled \'ORANGE MARMALADE\', but to open.',0,'1973-07-23 22:33:17',1,3),(73,17,4,'But at any rate, the Dormouse shook its head to feel a little recovered from the time he had never been in a deep voice, \'What are you getting on?\' said the Cat. \'Do you take me for a minute or two,.',1,'1985-08-04 01:43:32',2,1),(74,27,79,'Panther took pie-crust, and gravy, and meat, While the Duchess and the shrill voice of the other end of the garden: the roses growing on it were nine o\'clock in the sand with wooden spades, then a.',0,'1990-11-30 06:51:31',2,2),(75,61,43,'King very decidedly, and there was silence for some time with one elbow against the door, and tried to get her head to hide a smile: some of the trial.\' \'Stupid things!\' Alice began telling them her.',0,'1996-07-07 00:21:40',1,3),(76,35,77,'In another minute the whole party look so grave that she did not like the three gardeners instantly threw themselves flat upon their faces, and the little door: but, alas! either the locks were too.',1,'2016-01-15 11:32:29',3,1),(77,65,67,'It was so ordered about by mice and rabbits. I almost wish I\'d gone to see if she had to fall upon Alice, as she swam lazily about in all my life!\' Just as she heard a little startled by seeing the.',1,'2011-12-03 01:16:12',2,2),(78,34,19,'Caterpillar, just as she swam lazily about in all my life!\' Just as she spoke. Alice did not at all a pity. I said \"What for?\"\' \'She boxed the Queen\'s absence, and were quite silent, and looked at.',1,'1980-11-15 03:55:51',1,3),(79,94,54,'Dormouse,\' the Queen in a low voice. \'Not at all,\' said the King. The White Rabbit returning, splendidly dressed, with a round face, and large eyes full of soup. \'There\'s certainly too much.',0,'1989-03-10 01:33:01',2,1),(80,54,80,'I can\'t see you?\' She was a different person then.\' \'Explain all that,\' he said in a low trembling voice, \'Let us get to the shore. CHAPTER III. A Caucus-Race and a long tail, certainly,\' said.',0,'2008-06-15 19:56:33',2,2),(81,60,3,'Alice\'s side as she had tired herself out with his whiskers!\' For some minutes it puffed away without speaking, but at last turned sulky, and would only say, \'I am older than I am very tired of.',1,'1995-08-25 10:15:59',1,3),(82,91,65,'Rabbit started violently, dropped the white kid gloves in one hand and a long argument with the name again!\' \'I won\'t have any rules in particular; at least, if there are, nobody attends to.',0,'1989-05-09 09:14:05',2,1),(83,95,32,'I do,\' said Alice very politely; but she had been wandering, when a sharp hiss made her draw back in a very interesting dance to watch,\' said Alice, a little queer, won\'t you?\' \'Not a bit,\' she.',1,'1980-09-07 21:05:00',2,2),(84,85,69,'Oh, my dear paws! Oh my dear Dinah! I wonder if I know all sorts of things, and she, oh! she knows such a neck as that! No, no! You\'re a serpent; and there\'s no use now,\' thought poor Alice, that.',0,'1995-05-28 20:03:21',1,3),(85,16,81,'Tortoise, if he were trying to explain the mistake it had fallen into the garden, where Alice could see, when she found her way out. \'I shall be punished for it now, I suppose, by being drowned in.',1,'1976-02-04 14:16:49',3,1),(86,50,52,'Dormouse\'s place, and Alice rather unwillingly took the opportunity of adding, \'You\'re looking for the accident of the cakes, and was going to turn into a pig, my dear,\' said Alice, (she had grown.',0,'2004-05-26 03:45:50',2,2),(87,39,39,'I was a paper label, with the next question is, Who in the distance, and she thought it would,\' said the Cat, as soon as there was a little three-legged table, all made of solid glass; there was.',1,'2010-06-13 12:15:33',1,3),(88,88,34,'King. On this the White Rabbit, \'and that\'s why. Pig!\' She said the Mock Turtle had just begun to repeat it, when a cry of \'The trial\'s beginning!\' was heard in the schoolroom, and though this was.',0,'1992-01-06 23:44:15',3,1);
+/*!40000 ALTER TABLE `messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `profiles`
+--
+
+DROP TABLE IF EXISTS `profiles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `profiles` (
+  `user_id` int unsigned NOT NULL COMMENT 'Ссылка на пользователя',
+  `gender` char(1) NOT NULL COMMENT 'Пол',
+  `birthday` date DEFAULT NULL COMMENT 'Дата рождения',
+  `city` varchar(130) DEFAULT NULL COMMENT 'Город проживания',
+  `country` varchar(130) DEFAULT NULL COMMENT 'Страна проживания',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `FK_profiles_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Профили';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `profiles`
+--
+
+LOCK TABLES `profiles` WRITE;
+/*!40000 ALTER TABLE `profiles` DISABLE KEYS */;
+INSERT INTO `profiles` VALUES (1,'','1999-03-27','Lake Malcolmmouth','994463374','1997-11-17 00:49:12','2013-01-23 00:00:00'),(2,'','2012-11-09','Lake Marcelinaberg','1398','1997-02-15 00:00:00','2021-04-08 19:08:10'),(3,'','2010-11-11','Lockmanview','52132139','1994-12-31 08:20:27','2015-12-31 00:00:00'),(4,'','2013-01-27','East Cassandra','27200','1971-01-19 23:18:56','1983-09-28 00:00:00'),(5,'','1988-12-06','Lake Dameonfurt','842202','2016-09-10 00:00:00','2021-04-08 19:08:10'),(6,'','1973-04-09','New Crystelmouth','','2001-09-20 00:00:00','2021-04-08 19:08:10'),(7,'','2016-01-05','South Jedland','3213334','2013-11-18 20:34:42','2017-07-07 00:00:00'),(8,'','2016-05-07','Westborough','55417329','1988-09-29 00:00:00','2021-04-08 19:08:10'),(9,'','1995-03-02','Clemensport','6142499','1981-10-31 18:02:41','2020-07-05 00:00:00'),(10,'','1975-09-14','Lake Eric','','2005-03-23 19:42:52','2009-01-11 00:00:00'),(11,'','2012-06-07','Lake Dewaynemouth','7891646','1991-04-23 00:00:00','2021-04-08 19:08:10'),(12,'','1988-10-31','Lake Millerhaven','4613969','1986-01-18 03:36:46','1989-07-21 00:00:00'),(13,'','2003-01-14','North Roxanne','98933011','1975-11-03 17:35:36','1997-01-22 00:00:00'),(14,'','1973-05-03','Labadiefurt','146086519','1980-10-30 00:00:00','2021-04-08 19:08:10'),(15,'','1983-03-31','Satterfieldhaven','72701929','1978-06-11 16:28:19','2011-09-09 00:00:00'),(16,'','1991-07-02','New Gia','982218997','1995-10-23 22:18:28','2011-01-31 00:00:00'),(17,'','2014-07-29','Streichview','','1987-09-30 00:00:00','2021-04-08 19:08:10'),(18,'','1994-02-10','North Reba','422130','1978-07-23 15:02:49','2004-08-11 00:00:00'),(19,'','1983-02-03','Port Joyfort','18','1979-06-20 00:00:00','2021-04-08 19:08:10'),(20,'','2010-01-06','Olsontown','615170','1999-04-08 00:00:00','2021-04-08 19:08:10'),(21,'','2007-01-12','West Fordberg','4983','1981-08-26 00:00:00','2021-04-08 19:08:10'),(22,'','2016-09-14','Collinsland','249329476','1970-02-02 22:32:32','1973-01-03 00:00:00'),(23,'','1989-02-13','East Roselyntown','1318','1979-02-24 00:00:00','2021-04-08 19:08:10'),(24,'','1972-05-08','Kundeland','47','1998-01-04 00:00:00','2021-04-08 19:08:10'),(25,'','1979-11-29','East Margueritetown','9768','1972-05-26 00:00:00','2021-04-08 19:08:10'),(26,'','1986-08-28','Port Pearl','11100','1977-11-27 00:00:00','2021-04-08 19:08:10'),(27,'','2018-05-25','Harmonychester','','1980-04-27 21:01:13','2020-01-14 00:00:00'),(28,'','2006-10-18','Port Emely','62673318','1973-10-30 06:23:58','2020-10-16 00:00:00'),(29,'','1992-10-08','Ginashire','','1985-08-12 19:36:49','2009-07-26 00:00:00'),(30,'','2000-12-24','East Clara','15','1976-12-08 00:00:00','2021-04-08 19:08:10'),(31,'','2001-05-03','West Sydnie','7','2013-10-21 00:00:00','2021-04-08 19:08:10'),(32,'','1992-03-09','Manuelshire','6','1984-10-30 17:29:32','1999-09-12 00:00:00'),(33,'','1970-03-11','Friedamouth','38191','1987-04-01 00:00:00','2021-04-08 19:08:10'),(34,'','2001-12-07','New Kaitlynland','2205','1984-01-10 21:57:03','2012-03-13 00:00:00'),(35,'','2001-08-17','Runolfssonshire','558506','2008-07-27 00:00:00','2021-04-08 19:08:10'),(36,'','1993-10-23','Mrazbury','','1976-08-04 00:00:00','2021-04-08 19:08:10'),(37,'','2017-05-11','Antoinetteton','504','1976-07-03 18:52:55','2008-05-17 00:00:00'),(38,'','2010-11-14','Lake Idellachester','670719','1987-10-14 00:00:00','2021-04-08 19:08:10'),(39,'','1971-10-04','Pagacville','318349','1971-07-02 00:00:00','2021-04-08 19:08:10'),(40,'','2017-10-07','South Jacynthe','7','1999-10-08 00:00:00','2021-04-08 19:08:10'),(41,'','2017-01-11','Spinkamouth','','1987-12-29 00:00:00','2021-04-08 19:08:10'),(42,'','1995-01-09','Kuhnside','147','1984-07-15 00:00:00','2021-04-08 19:08:10'),(43,'','2010-07-19','North Bridgettechester','2105','1989-07-11 03:40:55','2015-03-25 00:00:00'),(44,'','1991-09-27','Lake Abbyton','84177','1994-03-01 00:00:00','2021-04-08 19:08:10'),(45,'','1997-07-26','Boganland','565','1979-10-25 04:43:44','2010-10-15 00:00:00'),(46,'','1986-03-05','East Brayan','2','1970-10-16 11:29:23','1989-12-17 00:00:00'),(47,'','1988-03-22','Lueilwitzville','2','1976-10-18 19:29:07','1991-06-08 00:00:00'),(48,'','2003-11-04','Boscochester','31292530','1992-02-13 05:30:29','1994-04-21 00:00:00'),(49,'','1991-11-02','Scarlettville','35','1989-07-25 00:00:00','2021-04-08 19:08:10'),(50,'','1977-11-19','South Betty','666838','1973-10-16 02:18:32','1988-12-06 00:00:00'),(51,'','2019-09-28','Lake Beverlyport','59563148','1970-03-17 03:17:35','2017-01-30 00:00:00'),(52,'','1980-08-03','Collinsstad','3435389','1999-01-29 00:00:00','2021-04-08 19:08:10'),(53,'','1989-07-09','East Idella','','2009-05-26 00:00:00','2021-04-08 19:08:10'),(54,'','1979-12-11','South Evelinebury','8','1985-01-19 20:11:32','1985-03-20 00:00:00'),(55,'','1986-08-24','Reichelport','51','1976-08-13 03:11:41','1990-04-20 00:00:00'),(56,'','1982-08-01','North Bartonhaven','38000','1989-10-04 21:07:00','1999-10-16 00:00:00'),(57,'','1976-01-28','Feilchester','62414','2002-04-29 00:00:00','2021-04-08 19:08:10'),(58,'','1993-06-24','South Albury','411488','1989-09-23 01:21:27','2011-12-27 00:00:00'),(59,'','1978-09-26','West Brandymouth','93350102','2013-07-26 03:03:42','2017-01-08 00:00:00'),(60,'','2011-01-08','Monahanburgh','7449055','1991-11-25 20:47:24','2013-10-14 00:00:00'),(61,'','2013-08-04','New Rahsaanbury','31913583','1993-07-27 22:12:28','2001-03-12 00:00:00'),(62,'','1971-11-26','South Johann','51998','1991-08-28 00:00:00','2021-04-08 19:08:10'),(63,'','1993-03-16','West Albin','2','1999-12-04 00:00:00','2021-04-08 19:08:10'),(64,'','1987-09-27','South Tellybury','174','1973-08-06 21:53:47','2017-10-19 00:00:00'),(65,'','1974-07-15','West Jan','33762','1983-06-25 00:00:00','2021-04-08 19:08:10'),(66,'','2002-01-26','New Drewport','275833','1987-09-16 17:58:13','2014-03-08 00:00:00'),(67,'','2005-07-07','Port Robert','','1977-03-30 09:06:42','1995-10-28 00:00:00'),(68,'','2019-08-26','East Charles','34','1978-09-25 03:10:06','1981-07-31 00:00:00'),(69,'','1998-01-30','West Brayan','5760','1982-05-09 02:32:48','2010-09-22 00:00:00'),(70,'','1987-04-15','Hahnland','660','1973-12-30 00:00:00','2021-04-08 19:08:10'),(71,'','1974-03-29','Klingville','89974318','1992-10-02 21:12:58','2016-08-28 00:00:00'),(72,'','2006-09-28','South Conrad','7','1985-05-14 00:00:00','2021-04-08 19:08:10'),(73,'','1976-06-23','North Dan','','1992-04-15 00:00:00','2021-04-08 19:08:10'),(74,'','1970-02-02','Port Burleyville','25','2018-01-01 00:00:00','2021-04-08 19:08:10'),(75,'','2020-02-20','Schultzview','289','2011-10-09 19:24:46','2017-01-26 00:00:00'),(76,'','1992-04-28','Lake Bernitaport','683236','1978-07-09 00:00:00','2021-04-08 19:08:10'),(77,'','2004-01-18','Margotburgh','','1970-03-22 01:53:22','1993-01-20 00:00:00'),(78,'','2014-10-19','New Mellie','785589378','1973-11-21 10:39:48','2018-03-03 00:00:00'),(79,'','1989-12-10','East Eldon','31430','1978-09-18 00:00:00','2021-04-08 19:08:10'),(80,'','1975-12-26','New Justynberg','237305391','1972-07-28 00:00:00','2021-04-08 19:08:10'),(81,'','2005-09-30','Hartmannfurt','763','2011-06-02 00:00:00','2021-04-08 19:08:10'),(82,'','1987-02-06','Port Estrella','7722968','1993-05-21 04:09:59','2015-07-09 00:00:00'),(83,'','2006-01-06','West Donniebury','533','1981-03-24 00:00:00','2021-04-08 19:08:10'),(84,'','2021-02-11','South Priscillaside','75576','1997-10-11 03:37:13','2020-08-27 00:00:00'),(85,'','2001-07-21','Jaskolskimouth','253','1999-03-24 14:47:38','2013-06-22 00:00:00'),(86,'','2005-12-17','Callieton','586575','1973-03-25 00:00:00','2021-04-08 19:08:10'),(87,'','2007-10-16','North Nikoland','1373','1991-03-25 00:00:00','2021-04-08 19:08:10'),(88,'','1972-01-01','North Leilaville','4130489','1985-10-14 00:00:00','2021-04-08 19:08:10'),(89,'','2020-08-23','Bonniebury','693937','1989-08-09 18:28:33','2003-08-06 00:00:00'),(90,'','2013-01-02','Brannonmouth','9266119','1991-09-27 15:59:39','2010-04-23 00:00:00'),(91,'','1971-05-08','West Aaronborough','','1992-04-12 13:38:52','2016-03-20 00:00:00'),(92,'','2017-01-27','Kylertown','22488','1994-06-10 00:00:00','2021-04-08 19:08:10'),(93,'','2020-01-26','Ferminfurt','5449','1972-10-17 00:00:00','2021-04-08 19:08:10'),(94,'','2014-06-19','Cristinaburgh','','1974-04-22 06:48:21','2014-02-11 00:00:00'),(95,'','1971-08-10','Margaritaside','91916','1970-09-02 18:05:06','2000-08-25 00:00:00'),(96,'','1987-10-22','West Johnniefurt','6076','1980-01-08 00:00:00','2021-04-08 19:08:10'),(97,'','1973-07-29','Mariettatown','74','1997-11-20 21:55:48','2008-04-04 00:00:00'),(98,'','2006-01-22','Feestton','247','2002-04-06 00:00:00','2021-04-08 19:08:10'),(99,'','2017-03-24','North Joelburgh','1094346','1986-07-22 19:27:07','1991-09-04 00:00:00'),(100,'','2018-01-25','North Phyllisberg','','1988-09-12 00:00:00','2021-04-08 19:08:10');
+/*!40000 ALTER TABLE `profiles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор строки',
+  `first_name` varchar(100) NOT NULL COMMENT 'Имя пользователя',
+  `last_name` varchar(100) NOT NULL COMMENT 'Фамилия пользователя',
+  `email` varchar(100) NOT NULL COMMENT 'Почта',
+  `phone` varchar(100) NOT NULL COMMENT 'Телефон',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `phone` (`phone`)
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Пользователи';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'Walker','Welch','cole.johnnie@example.org','111-074-0667','1973-12-27 20:34:36','2021-04-08 19:08:10'),(2,'Alexane','Dooley','ari.trantow@example.com','(491)819-4378','1976-09-03 07:27:59','2004-03-05 01:04:06'),(3,'Neha','McGlynn','kasandra.cummerata@example.com','1-794-127-8762x42274','1971-07-26 01:41:34','2021-04-08 19:08:10'),(4,'Reed','Jones','whuel@example.com','1-198-427-7280','1975-01-21 11:08:58','2021-04-08 19:08:10'),(5,'Adrain','Daugherty','bwillms@example.org','1-482-473-2653','1979-12-16 11:25:59','2003-01-03 07:43:43'),(6,'Tomasa','Rath','christiansen.brannon@example.org','1-957-400-5889x1138','1979-08-26 02:09:26','2021-04-08 19:08:10'),(7,'Zackary','Macejkovic','imogene72@example.net','(762)225-2352x4309','1982-07-17 23:08:22','2021-04-08 19:08:10'),(8,'Raphaelle','Hyatt','ybosco@example.com','445-054-7163','1994-02-12 06:18:01','2021-04-08 19:08:10'),(9,'Juwan','Carroll','qswaniawski@example.com','1-419-217-3647','1970-07-26 21:37:35','2021-04-08 19:08:10'),(10,'Jaeden','Kreiger','alisha.jacobi@example.com','+44(5)5867895080','1970-10-17 23:21:59','2021-04-08 19:08:10'),(11,'Rachel','Nader','forest.runolfsson@example.com','(962)570-7557x3896','1973-08-05 12:42:42','2021-04-08 19:08:10'),(12,'Ines','Walter','iconroy@example.net','586.503.5031','1991-10-27 20:39:30','2021-04-08 19:08:10'),(13,'Norbert','Hegmann','elisabeth.reilly@example.com','688-379-9760','1976-01-19 15:28:07','2021-04-08 19:08:10'),(14,'Krista','Quigley','cindy.schamberger@example.net','(078)187-4906','2012-08-27 10:11:15','2014-10-07 09:23:36'),(15,'Adalberto','Schowalter','lynch.marcellus@example.org','+73(6)3708868327','1997-10-15 16:23:15','2021-04-08 19:08:10'),(16,'Seamus','Keeling','legros.erica@example.com','(502)947-2813','1986-12-16 09:53:48','2021-04-08 19:08:10'),(17,'Lou','Schimmel','reagan75@example.org','064.480.4031','1977-05-01 13:03:28','2021-04-08 19:08:10'),(18,'Emma','Lakin','greta60@example.com','+61(7)1912998877','1972-05-07 10:27:13','2021-04-08 19:08:10'),(19,'Rodrick','Hahn','nader.berneice@example.org','(615)189-6436','1976-10-20 17:08:44','2007-11-10 16:23:13'),(20,'Lia','Runolfsson','merle.zieme@example.com','004.275.1726x6899','1972-01-25 07:48:59','2008-07-07 17:55:30'),(21,'Elias','Bauch','harber.lynn@example.net','229-864-9826','1990-01-12 11:07:39','2000-02-21 04:45:48'),(22,'Tristin','Hayes','towne.lea@example.com','072.598.3311x937','1981-05-27 14:53:49','1995-08-22 01:59:44'),(23,'Vincenza','Donnelly','adaline.kuphal@example.org','1-604-816-9253x46878','1988-06-15 04:59:22','2007-01-25 20:06:56'),(24,'Wilford','Toy','eaufderhar@example.org','+77(2)9910731091','1985-08-25 21:56:03','2021-04-08 19:08:10'),(25,'Audra','Anderson','pschowalter@example.net','+95(8)8078199775','1970-07-25 18:06:35','1999-06-13 20:30:46'),(26,'Jamaal','Feil','darrin.beahan@example.com','048-955-8432','2008-03-21 23:18:53','2013-03-09 21:09:06'),(27,'Erik','Swift','shanahan.estelle@example.net','491.528.7357','1972-11-22 21:29:50','2021-04-08 19:08:10'),(28,'Jeramie','Bins','ara61@example.org','736-767-4961x800','1982-08-29 03:09:23','1997-05-05 07:44:57'),(29,'Tomasa','Hudson','bschaden@example.org','1-619-439-4099x748','1995-04-23 21:19:25','2021-04-08 19:08:10'),(30,'Junius','Hahn','aida06@example.org','1-295-552-0725x9375','1973-10-16 00:32:45','2021-04-08 19:08:10'),(31,'Skyla','Kiehn','consuelo.koepp@example.net','02346837920','1994-03-12 06:48:15','2021-04-08 19:08:10'),(32,'Leora','Flatley','joe.kautzer@example.net','328.969.7994x17251','1975-07-13 14:34:06','2021-04-08 19:08:10'),(33,'Isom','Buckridge','bhilpert@example.net','310.013.4249x262','1972-10-29 20:19:11','2015-01-16 15:13:24'),(34,'Adolphus','Schuster','xerdman@example.org','118-877-5504x3017','1995-09-16 13:01:32','2021-04-08 19:08:10'),(35,'Antonia','Cartwright','leola93@example.org','397.223.1415x8307','1980-05-06 12:29:53','2021-04-08 19:08:10'),(36,'Elwyn','Christiansen','bogisich.ward@example.net','(179)424-7165x9186','1987-09-12 05:38:37','1992-04-06 08:26:55'),(37,'Aurore','McKenzie','esteban.feest@example.org','(657)014-1149x5752','1976-04-15 11:29:22','2021-04-08 19:08:10'),(38,'Carlee','Trantow','friesen.audrey@example.com','1-916-861-4956x70149','1979-02-14 23:36:39','2003-09-25 20:25:19'),(39,'Hanna','Mills','lwolf@example.org','(935)865-8724x852','1987-01-13 01:46:28','1993-02-23 09:37:08'),(40,'Katrina','Jaskolski','eo\'reilly@example.net','(432)810-4358x685','1979-01-17 07:22:36','2021-04-08 19:08:10'),(41,'Aiden','Monahan','pquigley@example.com','(851)305-3959x86422','2007-04-06 00:27:39','2021-04-08 19:08:10'),(42,'Gerardo','Renner','elakin@example.com','1-936-455-0231x882','2004-12-28 04:44:53','2006-04-21 20:44:01'),(43,'Matt','Borer','chase48@example.org','170.905.4004','1986-07-23 14:01:11','2021-04-08 19:08:10'),(44,'Kennith','Rice','ugibson@example.com','(649)633-9727x88821','1979-12-20 20:20:12','1980-04-03 05:58:11'),(45,'Shyanne','Konopelski','pollich.max@example.com','499-655-5664','1981-04-25 19:53:03','1999-07-28 03:41:39'),(46,'Elvis','Cummings','coleman.kuhn@example.net','988.572.6421','2012-06-21 21:51:50','2021-04-08 19:08:10'),(47,'Consuelo','Rath','merl.harvey@example.net','1-001-112-5182x114','1993-11-01 20:25:33','2017-12-31 21:53:22'),(48,'Melvina','Kihn','carolanne.effertz@example.com','884-937-7179','1992-09-10 05:23:56','2004-04-03 03:44:00'),(49,'Orin','Bayer','csmitham@example.net','933.665.3115','1975-02-01 18:06:06','2021-04-08 19:08:10'),(50,'Korey','Metz','mcglynn.ariel@example.org','1-778-326-5014x09927','1974-08-17 19:27:16','1978-08-24 03:25:57'),(51,'Zoila','Davis','magnus07@example.net','(055)625-2211x4804','1997-07-18 01:45:17','2021-04-08 19:08:10'),(52,'Anna','Keebler','demetrius29@example.com','1-822-118-1674x3744','1976-08-19 15:52:37','2021-04-08 19:08:10'),(53,'Hailie','Ondricka','cronin.aniyah@example.com','1-861-752-6100x729','1971-06-01 19:55:04','2021-04-08 19:08:10'),(54,'Shirley','Runolfsdottir','jimmie.bradtke@example.org','344-278-8484','1983-01-01 21:45:41','2021-04-08 19:08:10'),(55,'Deontae','Armstrong','iokuneva@example.com','1-263-481-6640x631','1978-04-10 19:03:15','2021-04-08 19:08:10'),(56,'Arnold','Vandervort','clark.franecki@example.org','09119729062','1993-05-03 15:01:01','2006-02-10 10:20:38'),(57,'Brenda','Crona','yvonne40@example.com','406-233-0534x704','2009-01-27 01:13:34','2021-04-08 19:08:10'),(58,'Shaina','Bergstrom','erika.kautzer@example.org','(975)394-8716','1978-10-28 10:35:30','2021-04-08 19:08:10'),(59,'Connie','Maggio','waters.emery@example.com','158-304-7912x07506','1989-11-16 03:32:17','2021-04-08 19:08:10'),(60,'Delbert','Kovacek','alessandra21@example.net','1-806-157-7728','1976-05-22 18:42:26','1994-04-21 17:41:21'),(61,'Jaeden','O\'Keefe','runte.shaniya@example.net','602-172-2117','1974-08-02 05:40:48','1975-09-22 22:19:46'),(62,'Lon','Abbott','ykuhic@example.org','(536)738-4560x7691','1990-06-28 17:23:49','2021-04-08 19:08:10'),(63,'Trycia','Abernathy','bsmitham@example.net','021-653-6642','1971-11-25 03:41:00','2021-04-08 19:08:10'),(64,'Emil','Reichel','wfadel@example.com','333-027-2520x476','1973-08-26 02:54:46','2021-04-08 19:08:10'),(65,'Ines','Johnston','leslie40@example.net','+65(5)4824958213','1974-02-17 19:03:23','2021-04-08 19:08:10'),(66,'Omari','Swaniawski','kertzmann.chet@example.org','(824)054-5052','1992-10-30 03:23:05','2021-04-08 19:08:10'),(67,'Alessandra','Dooley','reynold.larson@example.org','00117864359','1970-07-24 18:39:14','2021-04-08 19:08:10'),(68,'Elna','Walter','nreinger@example.com','360.965.4785x65206','1998-03-17 01:42:50','2006-09-14 02:42:57'),(69,'Fannie','Greenfelder','eugenia.shanahan@example.net','02921741386','1979-09-19 06:14:08','2005-09-08 23:41:55'),(70,'Katrine','Carter','zdaniel@example.org','1-582-307-2356','1974-09-22 13:59:46','2012-12-11 15:19:29'),(71,'Megane','Beatty','cassin.watson@example.org','(758)706-9608','1996-07-31 14:01:42','2007-07-08 13:49:15'),(72,'Halie','Blick','ddenesik@example.net','821-785-5905','1973-03-22 17:58:04','2021-04-08 19:08:10'),(73,'Lera','Dare','trystan05@example.net','676.282.3435x506','1972-06-12 00:42:55','2021-04-08 19:08:10'),(74,'Roberto','Gaylord','ehaag@example.org','1-917-249-1310x346','1983-02-28 11:18:40','2021-04-08 19:08:10'),(75,'Audra','Mueller','mattie54@example.com','162.651.3451','1994-03-24 13:31:43','2021-04-08 19:08:10'),(76,'Joanne','Moen','pwisoky@example.net','1-428-593-6116x728','1991-12-26 10:06:16','2006-08-15 21:00:25'),(77,'Blaise','West','marlon32@example.org','+85(2)5166442410','2004-04-30 02:51:16','2008-05-05 01:43:16'),(78,'Newell','Spinka','charles.ruecker@example.org','031.213.7144x50282','1995-06-08 11:52:34','2021-04-08 19:08:10'),(79,'Frederique','Weissnat','larmstrong@example.org','(221)591-9052x04194','1975-10-13 00:13:22','2021-04-08 19:08:10'),(80,'Theresia','Braun','esawayn@example.com','00165188347','1975-09-08 23:17:52','1993-03-22 04:35:47'),(81,'Myriam','Jast','icole@example.com','830.387.6676','1978-10-14 05:17:17','1992-02-25 07:15:39'),(82,'Misty','Predovic','hills.keyshawn@example.net','05209501797','1994-07-14 01:25:01','2021-04-08 19:08:10'),(83,'Pink','Gerhold','mraz.luigi@example.net','1-917-657-8774','1982-03-22 03:19:29','2013-08-17 05:52:07'),(84,'Lori','Mante','fannie.jakubowski@example.com','850.098.9961','1989-01-27 21:54:56','2021-04-08 19:08:10'),(85,'Sienna','Feeney','cschimmel@example.net','+93(9)5429653191','2001-04-04 18:12:33','2021-04-08 19:08:10'),(86,'Grady','Nader','effertz.nickolas@example.org','+73(6)6529742578','1978-12-12 11:48:57','2011-11-06 18:12:07'),(87,'Mariela','Collier','lizeth.ratke@example.net','02151561872','1978-07-15 12:50:27','2021-04-08 19:08:10'),(88,'Beulah','Feest','matilde38@example.net','1-689-393-9026','1978-11-22 16:01:44','1996-07-28 23:37:41'),(89,'Ola','Altenwerth','hbecker@example.org','1-817-533-8539x74723','1973-01-10 08:27:35','1978-09-04 11:16:31'),(90,'Krista','McGlynn','aniya30@example.com','+83(0)8718211710','1972-11-04 19:55:48','2021-04-08 19:08:10'),(91,'Herminio','Luettgen','zeichmann@example.com','(826)298-8970','2002-09-05 19:02:21','2011-05-23 05:17:03'),(92,'Dante','Zemlak','arthur.wisoky@example.org','629.133.6764','2016-09-04 06:56:14','2019-05-08 11:35:17'),(93,'Clint','Tremblay','xrutherford@example.com','553-668-8813','1974-11-16 14:30:52','2021-04-08 19:08:10'),(94,'Roberto','Harvey','adolf.prohaska@example.com','05926488472','2001-04-26 19:10:49','2020-04-19 14:18:14'),(95,'Ian','Schinner','toby.witting@example.net','801.662.8285x55518','1975-01-13 19:53:46','1992-08-05 01:58:07'),(96,'Antoinette','Hermann','mwalter@example.org','371.024.7068','2003-01-08 20:19:05','2021-04-08 19:08:10'),(97,'Jennifer','Jerde','rolando44@example.net','677-529-1084','1992-11-03 08:52:43','2019-01-03 16:17:38'),(98,'Eve','Emard','nedra43@example.com','1-362-077-9972x062','1996-10-02 15:33:02','2021-04-08 19:08:10'),(99,'Nasir','Hickle','vella.mills@example.net','812-571-3320','1973-09-16 12:16:02','2006-08-03 16:16:57'),(100,'Larue','Stiedemann','lbecker@example.com','04843639513','1983-07-02 00:35:30','2021-04-08 19:08:10');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2021-04-08 19:12:38

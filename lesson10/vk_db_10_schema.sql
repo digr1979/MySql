@@ -1,6 +1,10 @@
--- Создание БД для социальной сети ВКонтакте
--- https://vk.com/geekbrainsru
--- ДЗ №8
+###################################################################################
+# 
+# Author: 	   Dmitry Gromov
+# Date:        2021-04-29
+# Description: Homework #10. VK database schema 
+#
+###################################################################################
 
 USE mysql;
 
@@ -26,6 +30,9 @@ CREATE TABLE users (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
 ) COMMENT "Пользователи";  
 
+-- добавлено при выполнении задания №10 
+CREATE INDEX ix_last_name ON users(last_name ASC) USING BTREE COMMENT "Для поиска по фамилии";
+
 
 -- Таблица профилей
 CREATE TABLE profiles (
@@ -38,6 +45,10 @@ CREATE TABLE profiles (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки",
   CONSTRAINT FK_profiles_users FOREIGN KEY (user_id) REFERENCES users(id)
 ) COMMENT "Профили"; 
+
+-- добавлено при выполнении задания №10 
+CREATE INDEX ix_birthday ON profiles(birthday ASC) USING BTREE COMMENT "Для возможности реализации напоминаний";
+CREATE INDEX ix_country_city ON profiles(country ASC, city ASC) USING BTREE COMMENT "Для поиска по стране";
 
 
 -- Таблица типов сущностей 
@@ -64,10 +75,6 @@ CREATE TABLE entity (
     FOREIGN KEY FK_entity_entity_types (entity_type_id) REFERENCES entity_types(id),
     FOREIGN KEY FK_entity_users (created_by) REFERENCES users(id)
 ) COMMENT = 'Таблица сущностей, к которым можно привязывать другие объекты, такие как: лайки, и т д и т п';
-
-/*
-	INSERT INTO `entity` (entity_type_id, created_by) VALUES ( ROUND(RAND()+1), ROUND(RAND()*100) ); 
-*/
 
 -- Таблица статусов сообщений
 CREATE TABLE message_statuses (
